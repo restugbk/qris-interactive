@@ -63,32 +63,31 @@ class QrisMerchantMutation
             return null;
         }
         $data = json_decode(file_get_contents($this->loginFilePath), true);
-        if (!$data || !isset($data['session'])) {
-            return null;
-        }
-        $this->session     = $data['session'];
+
+        $this->session     = $data['session'] ?? null;
         $this->secretToken = $data['secret_token'] ?? null;
         $this->csrf        = $data['csrf'] ?? null;
+
         return $data;
     }
 
     public function ensureLogin(): void
     {
-        $loginData = $this->loadLoginData();
+        $this->loadLoginData();
 
-        if (!$loginData || empty($this->session)) {
+        if (empty($this->session)) {
             $this->performFreshLogin();
-        } else {
-            if (empty($this->csrf)) {
-                $cookie = "PHPSESSID={$this->session}";
-                $this->csrf = $this->getCsrfToken($cookie);
+            return;
+        }
 
-                if ($this->csrf) {
-                    $this->saveLoginData();
-                } else {
-                    $this->performFreshLogin();
-                }
-            }
+        $cookie = "PHPSESSID={$this->session}";
+        $checkCsrf = $this->getCsrfToken($cookie);
+
+        if ($checkCsrf) {
+            $this->csrf = $checkCsrf;
+            $this->saveLoginData();
+        } else {
+            $this->performFreshLogin();
         }
     }
 
