@@ -1,0 +1,23 @@
+{
+    "name": "restugbk/qris-interactive",
+    "description": "PHP Class for fetching QRIS Interactive merchant transaction history (Un-official)",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Restugbk\\MutasiQrisMerchantID\\": "src/"
+        },
+        "files": [
+            "src/StrDomHtml.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "restugbk",
+            "homepage": "https://github.com/restugbk"
+        }
+    ],
+}
