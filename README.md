@@ -98,7 +98,15 @@ $result = $qris->getTransactionsByCustom(
 );
 
 if ($result['status']) {
-    print_r($result['data']['transactions']);
+    $data = $result['data'];
+    echo "Total Records: " . $data['total_records'] . "\n";
+    echo "Total Amount : Rp " . number_format($data['summary_amount']) . "\n";
+
+    foreach ($data['transactions'] as $trx) {
+        echo "[{$trx['date']}] {$trx['customer']} - Rp " . number_format($trx['amount']) . " ({$trx['status']})\n";
+    }
+} else {
+    echo "Error: " . $result['error'];
 }
 ```
 
