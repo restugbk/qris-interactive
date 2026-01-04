@@ -352,6 +352,58 @@ class QrisMerchantMutation
         return ['status' => false, 'error' => 'Invalid JSON response'];
     }
 
+    /**
+     * Get Transactions Custom Filtering
+     */
+    public function getTransactionsByCustom(string $merchant, string $startDate, string $endDate, string $item, string $item_search, int $limit = 300): array
+    {
+        $this->ensureLogin();
+        $this->switchMerchant($merchant);
+
+        $url = self::BASE_URL . "/v2/m/proses.php?required=getTransactions";
+        $range = "$startDate - $endDate";
+
+        $postFields = http_build_query([
+            'draw' => 1,
+            'start' => 0,
+            'length' => $limit,
+            'order[0][column]' => 0,
+            'order[0][dir]' => 'desc',
+            'range' => $range,
+            'item' => $item,
+            'item_search' => $item_search,
+            'status' => 'all',
+            'limit' => $limit,
+            'store' => 0,
+        ]);
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $postFields,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'User-Agent: ' . $this->userAgent,
+                'Cookie: PHPSESSID=' . $this->session,
+                'X-Requested-With: XMLHttpRequest',
+                'X-Token-Csrf: ' . $this->csrf,
+                'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+                'Referer: ' . self::BASE_URL . '/v2/m/kontenr.php?idir=pages/historytrx.php',
+            ],
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($response, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return ['status' => true, 'data' => $this->formatTransactions($json)];
+        }
+
+        return ['status' => false, 'error' => 'Invalid JSON response'];
+    }
+
     private function formatTransactions(array $json): array
     {
         if (!isset($json['data'])) return [];

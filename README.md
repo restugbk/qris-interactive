@@ -70,6 +70,38 @@ if ($result['status']) {
 }
 ```
 
+## 4. Advanced Search (Custom Filtering)
+You can search for specific transactions using `RRN`, `Invoice ID`, or `Customer Name` to filter results more accurately without fetching all data.
+
+```php
+$merchantId = '123456789';
+$startDate  = '01/01/2026';
+$endDate    = '04/01/2026';
+
+/**
+ * Search Category ($item):
+ * 'rrn'      -> Search by Retrieval Reference Number
+ * 'inv'      -> Search by Invoice ID
+ * 'nominal'  -> Search by Transaction Amount
+ * 'csname'   -> Search by Customer Name
+ * 'infoket'  -> Search by Transaction Note/Description
+ */
+$filterBy = 'nominal';  // Search Category
+$keyword  = '1000'; // The actual value you want to find
+
+$result = $qris->getTransactionsByCustom(
+    $merchantId, 
+    $startDate, 
+    $endDate, 
+    $filterBy, 
+    $keyword
+);
+
+if ($result['status']) {
+    print_r($result['data']['transactions']);
+}
+```
+
 ## 📋 Data Structure Reference
 
 The `transactions` array returns the following keys:
