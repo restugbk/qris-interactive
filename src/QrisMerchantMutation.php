@@ -33,6 +33,15 @@ class QrisMerchantMutation
 
         // Jika path tidak ditentukan, buat file di direktori saat ini
         $this->loginFilePath = $storagePath ?: __DIR__ . '/session.json';
+
+        if (!function_exists('str_get_html')) {
+            $helperPath = __DIR__ . '/StrDomHtml.php';
+            if (file_exists($helperPath)) {
+                require_once $helperPath;
+            } else {
+                throw new \RuntimeException("File StrDomHtml.php tidak ditemukan di: " . $helperPath);
+            }
+        }
     }
 
     private function saveLoginData(): void
